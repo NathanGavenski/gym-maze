@@ -63,6 +63,10 @@ class MazeEnv(gym.Env):
         if self.enable_render is True:
             self.maze_view.quit_game()
 
+    def set_random(self, status):
+        self.random_start = status
+        self.maze_view.set_random(status)
+
     def configure(self, display=None):
         self.display = display
 

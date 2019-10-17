@@ -80,6 +80,10 @@ class MazeView2D:
         else:
             return img_output
 
+    def set_random(self, status):
+        if status:
+            self.__robot = np.random.randint(self.__maze.maze_size[0], size=2)
+
     def quit_game(self):
         try:
             self.__game_over = True
@@ -107,7 +111,6 @@ class MazeView2D:
             self.__draw_robot(transparency=255)
 
     def reset_robot(self):
-
         self.__draw_robot(transparency=0)
         self.__robot = np.zeros(2, dtype=int)
         self.__draw_robot(transparency=255)
@@ -132,8 +135,8 @@ class MazeView2D:
             self.screen.blit(self.background, (0, 0))
             self.screen.blit(self.maze_layer,(0, 0))
 
-            if mode == "human":
-                pygame.display.flip()
+            # if mode == "human":
+            pygame.display.flip()
 
             return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
 
