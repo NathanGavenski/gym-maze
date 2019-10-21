@@ -1,6 +1,7 @@
 import gym
 import gym_maze
 import numpy as np
+import time
 
 from PIL import Image
 from progress.bar import Bar
@@ -14,14 +15,14 @@ max_iter = 200
 image_amount = 10000
 epochs = image_amount // max_iter
 
-bar = Bar('Creating', max=image_amount, suffix='%(percent).1f%% - %(eta)ds')
+# bar = Bar('Creating', max=image_amount, suffix='%(percent).1f%% - %(eta)ds')
 
 count_dict = np.zeros(5, dtype=np.int32)
 
 with open('./maze.txt', 'w') as f:
     count_all = 0
     while count_dict.min() < (image_amount // count_dict.shape[0]):
-        env = gym.make("maze-random-3x3-v0")
+        env = gym.make("maze-random-10x10-v0")
         state = env.reset()
         previous = env.set_random(True)
 
@@ -35,7 +36,7 @@ with open('./maze.txt', 'w') as f:
             action = env.action_space.sample()
             position, reward, done, info = env.step(action)
 
-            # Render next state (640, 640,´[[""]] 3)
+            # Render next state (640, 640, 3)
             next_state = env.render('rgb_array')
 
             # Save all data
@@ -51,13 +52,12 @@ with open('./maze.txt', 'w') as f:
             previous = position
 
             # Ensure the max number of iterations
-            if done:
+            if not done:
                 previous = env.reset()
 
             # Max iterations per maze
             count += 1
             count_all += 1
-            bar.next()
 
         env.close()
         del env
