@@ -81,8 +81,11 @@ class MazeView2D:
             return img_output
 
     def set_random(self, status):
+        initial_position = [0, 0]
         if status:
-            self.__robot = np.random.randint(self.__maze.maze_size[0], size=2)
+            initial_position = np.random.randint(self.__maze.maze_size[0], size=2)
+            self.__robot = initial_position
+        return initial_position
 
     def quit_game(self):
         try:
