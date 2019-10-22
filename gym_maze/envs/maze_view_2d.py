@@ -344,12 +344,11 @@ class Maze:
             return np.load(file_path, allow_pickle=False, fix_imports=True)
 
     def _generate_maze(self):
-
         # list of all cell locations
         self.maze_cells = np.zeros(self.maze_size, dtype=int)
 
         # Initializing constants and variables needed for maze generation
-        current_cell = (random.randint(0, self.MAZE_W-1), random.randint(0, self.MAZE_H-1))
+        current_cell = (random.randint(0, self.MAZE_W - 1), random.randint(0, self.MAZE_H - 1))
         num_cells_visited = 1
         cell_stack = [current_cell]
 
@@ -398,13 +397,13 @@ class Maze:
 
     def __break_random_walls(self, percent):
         # find some random cells to break
-        num_cells = int(round(self.MAZE_H*self.MAZE_W*percent))
-        cell_ids = random.sample(range(self.MAZE_W*self.MAZE_H), num_cells)
+        num_cells = int(round(self.MAZE_H * self.MAZE_W * percent))
+        cell_ids = random.sample(range(self.MAZE_W * self.MAZE_H), num_cells)
 
         # for each of those walls
         for cell_id in cell_ids:
             x = cell_id % self.MAZE_H
-            y = int(cell_id/self.MAZE_H)
+            y = int(cell_id / self.MAZE_H)
 
             # randomize the compass order
             dirs = random.sample(list(self.COMPASS.keys()), len(self.COMPASS))
@@ -424,7 +423,7 @@ class Maze:
         num_portal_sets = min(max_portal_sets, num_portal_sets)
 
         # the first and last cells are reserved
-        cell_ids = random.sample(range(1, self.MAZE_W * self.MAZE_H - 1), num_portal_sets*set_size)
+        cell_ids = random.sample(range(1, self.MAZE_W * self.MAZE_H - 1), num_portal_sets * set_size)
 
         for i in range(num_portal_sets):
             # sample the set_size number of sell

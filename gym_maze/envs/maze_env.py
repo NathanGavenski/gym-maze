@@ -173,3 +173,15 @@ class MazeEnvRandom20x20Plus(MazeEnv):
 class MazeEnvRandom30x30Plus(MazeEnv):
     def __init__(self, enable_render=True):
         super(MazeEnvRandom30x30Plus, self).__init__(maze_size=(30, 30), mode="plus", enable_render=enable_render)
+
+
+class Policy_MazeEnvSample5x5(MazeEnv):
+
+    def __init__(self, version, enable_render=True):
+        super(Policy_MazeEnvSample5x5, self).__init__(maze_file=f"maze5/maze2d_{version:03d}.npy", enable_render=enable_render)
+
+
+class Policy_MazeEnvSample10x10(MazeEnv):
+
+    def __init__(self, version, enable_render=True):
+        super(Policy_MazeEnvSample10x10, self).__init__(maze_file=f"maze10/maze2d_{version:03d}.npy", enable_render=enable_render)

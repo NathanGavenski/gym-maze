@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     # increment number until it finds a name that is not being used already (max maze_999)
     maze_path = None
-    for i in range(1, 1000):
+    for i in range(1, 11):
         maze_name = "maze2d_%03d.npy" % i
         maze_path = os.path.join(dir_name, maze_name)
         if not os.path.exists(maze_path):

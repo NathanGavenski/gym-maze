@@ -46,7 +46,6 @@ register(
     nondeterministic=True,
 )
 
-
 register(
     id='maze-sample-100x100-v0',
     entry_point='gym_maze.envs:MazeEnvSample100x100',
@@ -79,4 +78,10 @@ register(
     entry_point='gym_maze.envs:MazeEnvRandom30x30Plus',
     max_episode_steps=1000000,
     nondeterministic=True,
+)
+
+register(
+    id='maze-sample-10x10-v1',
+    entry_point='gym_maze.envs:Policy_MazeEnvSample10x10',
+    max_episode_steps=1000000,
 )
