@@ -36,9 +36,11 @@ class MazeView2D:
             self.screen = pygame.display.set_mode(screen_size)
             self.__screen_size = tuple(map(sum, zip(screen_size, (-1, -1))))
 
+        # TODO: Change entrance location
         # Set the starting point
         self.__entrance = np.zeros(2, dtype=int)
 
+        # TODO: Change goal location
         # Set the Goal
         self.__goal = np.array(self.maze_size) - np.array((1, 1))
 
@@ -46,6 +48,7 @@ class MazeView2D:
         self.__robot = self.entrance
 
         if self.__enable_render is True:
+            # TODO: Change background color (Except color (0, 0, 150))
             # Create a background
             self.background = pygame.Surface(self.screen.get_size()).convert()
             self.background.fill((255, 255, 255))
@@ -86,6 +89,10 @@ class MazeView2D:
             initial_position = np.random.randint(self.__maze.maze_size[0], size=2)
             self.__robot = initial_position
         return initial_position
+
+    def turn_augmentation_on(self):
+        # TODO CHANGE ALL COLORS AND GOAL AND ENTRANCE PLACEMENT
+        raise NotImplementedError()
 
     def quit_game(self):
         try:
@@ -148,6 +155,7 @@ class MazeView2D:
         if self.__enable_render is False:
             return
         
+        # TODO: Change line colors
         line_colour = (0, 0, 0, 255)
 
         # drawing the horizontal lines
@@ -211,12 +219,12 @@ class MazeView2D:
 
         pygame.draw.circle(self.maze_layer, colour + (transparency,), (x, y), r)
 
+    #TODO: Change color  to random
     def __draw_entrance(self, colour=(0, 0, 150), transparency=235):
-
         self.__colour_cell(self.entrance, colour=colour, transparency=transparency)
 
+    #TODO: Change color to random
     def __draw_goal(self, colour=(150, 0, 0), transparency=235):
-
         self.__colour_cell(self.goal, colour=colour, transparency=transparency)
 
     def __draw_portals(self, transparency=160):
