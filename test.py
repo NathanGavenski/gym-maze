@@ -25,9 +25,10 @@ path = f'./dataset/maze3/'
 with open(f'{path}maze.txt', 'w') as f:
     count_all = 0
     while count_dict.min() < (image_amount // count_dict.shape[0]):
-        env = gym.make("maze-random-3x3-v0")
+        env = gym.make("maze-random-10x10-v0")
         env.reset()
         previous = deepcopy(env.set_random(True))
+        env.turn_augmentation_on()
 
         count = 0
         while count < max_iter:

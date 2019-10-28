@@ -36,11 +36,9 @@ class MazeView2D:
             self.screen = pygame.display.set_mode(screen_size)
             self.__screen_size = tuple(map(sum, zip(screen_size, (-1, -1))))
 
-        # TODO: Change entrance location
         # Set the starting point
         self.__entrance = np.zeros(2, dtype=int)
 
-        # TODO: Change goal location
         # Set the Goal
         self.__goal = np.array(self.maze_size) - np.array((1, 1))
 
@@ -48,7 +46,6 @@ class MazeView2D:
         self.__robot = self.entrance
 
         if self.__enable_render is True:
-            # TODO: Change background color (Except color (0, 0, 150))
             # Create a background
             self.background = pygame.Surface(self.screen.get_size()).convert()
             self.background.fill((255, 255, 255))
@@ -58,6 +55,7 @@ class MazeView2D:
             self.maze_layer.fill((0, 0, 0, 0,))
 
             # show the maze
+            self.line_color = (0, 0, 0, 255)
             self.__draw_maze()
 
             # show the portals
@@ -67,9 +65,11 @@ class MazeView2D:
             self.__draw_robot()
 
             # show the entrance
+            self.entrance_color = (0, 0, 150)
             self.__draw_entrance()
 
             # show the goal
+            self.goal_color = (150, 0, 0)
             self.__draw_goal()
 
     def update(self, mode="human"):
@@ -91,8 +91,53 @@ class MazeView2D:
         return initial_position
 
     def turn_augmentation_on(self):
-        # TODO CHANGE ALL COLORS AND GOAL AND ENTRANCE PLACEMENT
-        raise NotImplementedError()
+        # TODO CHANGE ALL COLORS AND GOAL AND ENTRANCE PLACEMENT        
+        # Background
+        self.background_color = self.get_random_color(background=True)
+        self.background.fill(self.background_color)
+
+        # Lines
+        self.line_color = self.get_random_color() + (255,)
+        self.__draw_maze(colour=self.line_color)
+
+        # Entrance
+        self.__draw_entrance(colour=self.background_color)
+        self.__entrance = self.get_random_location(entrance=True)
+        self.entrance_color = self.get_random_color(entrance=True)
+        self.__draw_entrance(colour=self.entrance_color)
+
+        # Goal
+        self.__draw_goal(colour=self.background_color)
+        self.__goal = self.get_random_location(goal=True)
+        self.goal_color = self.get_random_color(goal=True)
+        self.__draw_goal(colour=self.goal_color)
+
+    def get_random_color(self, background=False, line=False, entrance=False, goal=False):
+
+        color = tuple(np.random.randint(0, 256, 3))
+        if color == (0, 0, 150):
+            return self.get_random_color(background, entrance, line, entrance, goal)
+        elif background is True and (color == self.entrance_color or color == self.goal_color or color == self.line_color[:-1]):
+            return self.get_random_color(background, entrance, line, entrance, goal)
+        elif line is True and (color == self.entrance_color or color == self.goal_color or color == self.background_color):
+            return self.get_random_color(background, entrance, line, entrance, goal)
+        elif entrance is True and (color == self.background_color or color == self.goal_color or color == self.line_color[:-1]):
+            return self.get_random_color(background, entrance, line, entrance, goal)
+        elif goal is True and (color == self.background_color or color == self.entrance_color or color == self.line_color[:-1]):
+            return self.get_random_color(background, entrance, line, entrance, goal)
+        else:
+            return color
+
+    def get_random_location(self, entrance=False, goal=False):
+        location = np.random.randint(0, self.__maze.maze_size[0], size=2)
+        if (location == self.__robot).all():
+            return self.get_random_location()
+        elif entrance is True and (location == self.__goal).all():
+            return self.get_random_location(entrance, goal)
+        elif goal is True and (location == self.__entrance).all():
+            return self.get_random_location(entrance, goal)
+        else:
+            return location
 
     def quit_game(self):
         try:
@@ -135,8 +180,8 @@ class MazeView2D:
     def __view_update(self, mode="human"):
         if not self.__game_over:
             # update the robot's position
-            self.__draw_entrance()
-            self.__draw_goal()
+            self.__draw_entrance(colour=self.entrance_color)
+            self.__draw_goal(colour=self.goal_color)
             self.__draw_portals()
             self.__draw_robot()
 
@@ -150,13 +195,13 @@ class MazeView2D:
 
             return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
 
-    def __draw_maze(self):
+    def __draw_maze(self, colour=(0, 0, 0, 255)):
         
         if self.__enable_render is False:
             return
         
         # TODO: Change line colors
-        line_colour = (0, 0, 0, 255)
+        line_colour = colour
 
         # drawing the horizontal lines
         for y in range(self.maze.MAZE_H + 1):
@@ -219,11 +264,9 @@ class MazeView2D:
 
         pygame.draw.circle(self.maze_layer, colour + (transparency,), (x, y), r)
 
-    #TODO: Change color  to random
     def __draw_entrance(self, colour=(0, 0, 150), transparency=235):
         self.__colour_cell(self.entrance, colour=colour, transparency=transparency)
 
-    #TODO: Change color to random
     def __draw_goal(self, colour=(150, 0, 0), transparency=235):
         self.__colour_cell(self.goal, colour=colour, transparency=transparency)
 

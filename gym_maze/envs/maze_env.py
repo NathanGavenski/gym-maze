@@ -67,6 +67,9 @@ class MazeEnv(gym.Env):
         self.random_start = status
         return self.maze_view.set_random(status)
 
+    def turn_augmentation_on(self):
+        self.maze_view.turn_augmentation_on()
+
     def configure(self, display=None):
         self.display = display
 
