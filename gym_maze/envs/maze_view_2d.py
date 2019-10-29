@@ -166,7 +166,7 @@ class MazeView2D:
 
     def reset_robot(self):
         self.__draw_robot(transparency=0)
-        self.__robot = np.zeros(2, dtype=int)
+        self.__robot = self.__entrance
         self.__draw_robot(transparency=255)
 
     def __controller_update(self):
@@ -198,8 +198,7 @@ class MazeView2D:
         
         if self.__enable_render is False:
             return
-        
-        # TODO: Change line colors
+
         line_colour = colour
 
         # drawing the horizontal lines
