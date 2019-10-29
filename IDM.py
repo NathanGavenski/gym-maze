@@ -28,7 +28,8 @@ with open(f'{path}maze.txt', 'w') as f:
         env = gym.make("maze-random-10x10-v0")
         env.reset()
         previous = deepcopy(env.set_random(True))
-        env.turn_augmentation_on()
+        if np.random.random() < 0.75:
+            env.turn_augmentation_on()
 
         count = 0
         while count < max_iter:

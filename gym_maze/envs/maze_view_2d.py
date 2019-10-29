@@ -90,8 +90,7 @@ class MazeView2D:
             self.__robot = initial_position
         return initial_position
 
-    def turn_augmentation_on(self):
-        # TODO CHANGE ALL COLORS AND GOAL AND ENTRANCE PLACEMENT        
+    def turn_augmentation_on(self):      
         # Background
         self.background_color = self.get_random_color(background=True)
         self.background.fill(self.background_color)
