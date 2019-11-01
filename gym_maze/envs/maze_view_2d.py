@@ -2,6 +2,7 @@ import pygame
 import random
 import numpy as np
 import os
+from copy import deepcopy
 
 
 class MazeView2D:
@@ -19,11 +20,13 @@ class MazeView2D:
 
         # Load a maze
         if maze_file_path is None:
-            self.__maze = Maze(maze_size=maze_size, has_loops=has_loops, num_portals=num_portals)
+            self.__maze = Maze(maze_size=maze_size,
+                               has_loops=has_loops, num_portals=num_portals)
         else:
             if not os.path.exists(maze_file_path):
                 dir_path = os.path.dirname(os.path.abspath(__file__))
-                rel_path = os.path.join(dir_path, "maze_samples", maze_file_path)
+                rel_path = os.path.join(
+                    dir_path, "maze_samples", maze_file_path)
                 if os.path.exists(rel_path):
                     maze_file_path = rel_path
                 else:
@@ -51,7 +54,8 @@ class MazeView2D:
             self.background.fill((255, 255, 255))
 
             # Create a layer for the maze
-            self.maze_layer = pygame.Surface(self.screen.get_size()).convert_alpha()
+            self.maze_layer = pygame.Surface(
+                self.screen.get_size()).convert_alpha()
             self.maze_layer.fill((0, 0, 0, 0,))
 
             # show the maze
@@ -86,17 +90,18 @@ class MazeView2D:
     def set_random(self, status):
         initial_position = [0, 0]
         if status:
-            initial_position = np.random.randint(self.__maze.maze_size[0], size=2)
+            initial_position = np.random.randint(
+                self.__maze.maze_size[0], size=2)
             self.__robot = initial_position
         return initial_position
 
-    def turn_augmentation_on(self):      
+    def turn_augmentation_on(self):
         # Background
         self.background_color = self.get_random_color(background=True)
         self.background.fill(self.background_color)
 
         # Lines
-        self.line_color = self.get_random_color() + (255,)
+        self.line_color = self.get_random_color(line=True) + (255,)
         self.__draw_maze(colour=self.line_color)
 
         # Entrance
@@ -159,14 +164,17 @@ class MazeView2D:
 
             # move the robot
             self.__robot += np.array(self.__maze.COMPASS[dir])
+
             # if it's in a portal afterward
             if self.maze.is_portal(self.robot):
-                self.__robot = np.array(self.maze.get_portal(tuple(self.robot)).teleport(tuple(self.robot)))
+                self.__robot = np.array(self.maze.get_portal(
+                    tuple(self.robot)).teleport(tuple(self.robot)))
+
             self.__draw_robot(transparency=255)
 
     def reset_robot(self):
         self.__draw_robot(transparency=0)
-        self.__robot = self.__entrance
+        self.__robot = deepcopy(self.__entrance)
         self.__draw_robot(transparency=255)
 
     def __controller_update(self):
@@ -184,10 +192,9 @@ class MazeView2D:
             self.__draw_portals()
             self.__draw_robot()
 
-
             # update the screen
             self.screen.blit(self.background, (0, 0))
-            self.screen.blit(self.maze_layer,(0, 0))
+            self.screen.blit(self.maze_layer, (0, 0))
 
             # if mode == "human":
             pygame.display.flip()
@@ -195,7 +202,7 @@ class MazeView2D:
             return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
 
     def __draw_maze(self, colour=(0, 0, 0, 255)):
-        
+
         if self.__enable_render is False:
             return
 
@@ -213,9 +220,10 @@ class MazeView2D:
 
         # breaking the walls
         for x in range(len(self.maze.maze_cells)):
-            for y in range (len(self.maze.maze_cells[x])):
+            for y in range(len(self.maze.maze_cells[x])):
                 # check the which walls are open in each cell
-                walls_status = self.maze.get_walls_status(self.maze.maze_cells[x, y])
+                walls_status = self.maze.get_walls_status(
+                    self.maze.maze_cells[x, y])
                 dirs = ""
                 for dir, open in walls_status.items():
                     if open:
@@ -226,7 +234,7 @@ class MazeView2D:
 
         if self.__enable_render is False:
             return
-        
+
         dx = x * self.CELL_W
         dy = y * self.CELL_H
 
@@ -255,15 +263,16 @@ class MazeView2D:
 
         if self.__enable_render is False:
             return
-        
+
         x = int(self.__robot[0] * self.CELL_W + self.CELL_W * 0.5 + 0.5)
         y = int(self.__robot[1] * self.CELL_H + self.CELL_H * 0.5 + 0.5)
-        r = int(min(self.CELL_W, self.CELL_H)/5 + 0.5)
+        r = int(min(self.CELL_W, self.CELL_H) / 5 + 0.5)
 
         pygame.draw.circle(self.maze_layer, colour + (transparency,), (x, y), r)
 
     def __draw_entrance(self, colour=(0, 0, 150), transparency=235):
-        self.__colour_cell(self.entrance, colour=colour, transparency=transparency)
+        self.__colour_cell(self.entrance, colour=colour,
+                           transparency=transparency)
 
     def __draw_goal(self, colour=(150, 0, 0), transparency=235):
         self.__colour_cell(self.goal, colour=colour, transparency=transparency)
@@ -272,14 +281,16 @@ class MazeView2D:
 
         if self.__enable_render is False:
             return
-        
+
         colour_range = np.linspace(0, 255, len(self.maze.portals), dtype=int)
         colour_i = 0
         for portal in self.maze.portals:
-            colour = ((100 - colour_range[colour_i])% 255, colour_range[colour_i], 0)
+            colour = ((100 - colour_range[colour_i]) %
+                      255, colour_range[colour_i], 0)
             colour_i += 1
             for location in portal.locations:
-                self.__colour_cell(location, colour=colour, transparency=transparency)
+                self.__colour_cell(location, colour=colour,
+                                   transparency=transparency)
 
     def __colour_cell(self, cell, colour, transparency):
 
@@ -287,7 +298,8 @@ class MazeView2D:
             return
 
         if not (isinstance(cell, (list, tuple, np.ndarray)) and len(cell) == 2):
-            raise TypeError("cell must a be a tuple, list, or numpy array of size 2")
+            raise TypeError(
+                "cell must a be a tuple, list, or numpy array of size 2")
 
         x = int(cell[0] * self.CELL_W + 0.5 + 1)
         y = int(cell[1] * self.CELL_H + 0.5 + 1)
@@ -345,7 +357,7 @@ class Maze:
         "W": (-1, 0)
     }
 
-    def __init__(self, maze_cells=None, maze_size=(10,10), has_loops=True, num_portals=0):
+    def __init__(self, maze_cells=None, maze_size=(10, 10), has_loops=True, num_portals=0):
 
         # maze member variables
         self.maze_cells = maze_cells
@@ -378,7 +390,8 @@ class Maze:
             raise ValueError("Cannot find the directory for %s." % file_path)
 
         else:
-            np.save(file_path, self.maze_cells, allow_pickle=False, fix_imports=True)
+            np.save(file_path, self.maze_cells,
+                    allow_pickle=False, fix_imports=True)
 
     @classmethod
     def load_maze(cls, file_path):
@@ -397,7 +410,8 @@ class Maze:
         self.maze_cells = np.zeros(self.maze_size, dtype=int)
 
         # Initializing constants and variables needed for maze generation
-        current_cell = (random.randint(0, self.MAZE_W - 1), random.randint(0, self.MAZE_H - 1))
+        current_cell = (random.randint(0, self.MAZE_W - 1),
+                        random.randint(0, self.MAZE_H - 1))
         num_cells_visited = 1
         cell_stack = [current_cell]
 
@@ -417,7 +431,7 @@ class Maze:
                 if 0 <= x1 < self.MAZE_W and 0 <= y1 < self.MAZE_H:
                     # if all four walls still exist
                     if self.all_walls_intact(self.maze_cells[x1, y1]):
-                    #if self.num_walls_broken(self.maze_cells[x1, y1]) <= 1:
+                        # if self.num_walls_broken(self.maze_cells[x1, y1]) <= 1:
                         neighbours[dir_key] = (x1, y1)
 
             # if there is a neighbour
@@ -427,7 +441,8 @@ class Maze:
                 x1, y1 = neighbours[dir]
 
                 # knock down the wall between the current cell and the selected neighbour
-                self.maze_cells[x1, y1] = self.__break_walls(self.maze_cells[x1, y1], self.__get_opposite_wall(dir))
+                self.maze_cells[x1, y1] = self.__break_walls(
+                    self.maze_cells[x1, y1], self.__get_opposite_wall(dir))
 
                 # push the current cell location to the stack
                 cell_stack.append(current_cell)
@@ -442,7 +457,8 @@ class Maze:
             self.__break_random_walls(0.2)
 
         if self.num_portals > 0:
-            self.__set_random_portals(num_portal_sets=self.num_portals, set_size=2)
+            self.__set_random_portals(
+                num_portal_sets=self.num_portals, set_size=2)
 
     def __break_random_walls(self, percent):
         # find some random cells to break
@@ -459,7 +475,8 @@ class Maze:
             for dir in dirs:
                 # break the wall if it's not already open
                 if self.is_breakable((x, y), dir):
-                    self.maze_cells[x, y] = self.__break_walls(self.maze_cells[x, y], dir)
+                    self.maze_cells[x, y] = self.__break_walls(
+                        self.maze_cells[x, y], dir)
                     break
 
     def __set_random_portals(self, num_portal_sets, set_size=2):
@@ -472,7 +489,8 @@ class Maze:
         num_portal_sets = min(max_portal_sets, num_portal_sets)
 
         # the first and last cells are reserved
-        cell_ids = random.sample(range(1, self.MAZE_W * self.MAZE_H - 1), num_portal_sets * set_size)
+        cell_ids = random.sample(
+            range(1, self.MAZE_W * self.MAZE_H - 1), num_portal_sets * set_size)
 
         for i in range(num_portal_sets):
             # sample the set_size number of sell
@@ -484,7 +502,7 @@ class Maze:
                 # convert portal ids to location
                 x = portal_cell_id % self.MAZE_H
                 y = int(portal_cell_id / self.MAZE_H)
-                portal_locations.append((x,y))
+                portal_locations.append((x, y))
             # append the new portal to the maze
             portal = Portal(*portal_locations)
             self.__portals.append(portal)
@@ -501,8 +519,10 @@ class Maze:
         # if cell is still within bounds after the move
         if self.is_within_bound(x1, y1):
             # check if the wall is opened
-            this_wall = bool(self.get_walls_status(self.maze_cells[cell_id[0], cell_id[1]])[dir])
-            other_wall = bool(self.get_walls_status(self.maze_cells[x1, y1])[self.__get_opposite_wall(dir)])
+            this_wall = bool(self.get_walls_status(
+                self.maze_cells[cell_id[0], cell_id[1]])[dir])
+            other_wall = bool(self.get_walls_status(self.maze_cells[x1, y1])[
+                              self.__get_opposite_wall(dir)])
             return this_wall or other_wall
         return False
 
@@ -540,10 +560,10 @@ class Maze:
     @classmethod
     def get_walls_status(cls, cell):
         walls = {
-            "N" : (cell & 0x1) >> 0,
-            "E" : (cell & 0x2) >> 1,
-            "S" : (cell & 0x4) >> 2,
-            "W" : (cell & 0x8) >> 3,
+            "N": (cell & 0x1) >> 0,
+            "E": (cell & 0x2) >> 1,
+            "S": (cell & 0x4) >> 2,
+            "W": (cell & 0x8) >> 3,
         }
         return walls
 
@@ -595,6 +615,7 @@ class Maze:
 
         return opposite_dirs
 
+
 class Portal:
 
     def __init__(self, *locations):
@@ -621,8 +642,6 @@ class Portal:
 
 if __name__ == "__main__":
 
-    maze = MazeView2D(screen_size= (500, 500), maze_size=(10,10))
+    maze = MazeView2D(screen_size=(500, 500), maze_size=(10, 10))
     maze.update()
     input("Enter any key to quit.")
-
-

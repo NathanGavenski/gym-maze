@@ -41,11 +41,11 @@ class MazeEnv(gym.Env):
         self.maze_size = self.maze_view.maze_size
 
         # forward or backward in each dimension
-        self.action_space = spaces.Discrete(2*len(self.maze_size))
+        self.action_space = spaces.Discrete(2 * len(self.maze_size))
 
         # observation is the x, y coordinate of the grid
         low = np.zeros(len(self.maze_size), dtype=int)
-        high =  np.array(self.maze_size, dtype=int) - np.ones(len(self.maze_size), dtype=int)
+        high = np.array(self.maze_size, dtype=int) - np.ones(len(self.maze_size), dtype=int)
         self.observation_space = spaces.Box(low, high, dtype=np.int64)
 
         # initial condition
@@ -87,7 +87,7 @@ class MazeEnv(gym.Env):
             reward = 1
             done = True
         else:
-            reward = -0.1/(self.maze_size[0]*self.maze_size[1])
+            reward = -0.1 / (self.maze_size[0] * self.maze_size[1])
             done = False
 
         self.state = self.maze_view.robot
@@ -98,7 +98,7 @@ class MazeEnv(gym.Env):
 
     def reset(self):
         self.maze_view.reset_robot()
-        self.state = np.zeros(2)
+        self.state = self.maze_view.entrance
         self.steps_beyond_done = None
         self.done = False
         return self.state

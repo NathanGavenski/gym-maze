@@ -12,14 +12,14 @@ from progress.bar import Bar
 states = np.ndarray((0, 2, 640, 640, 3))
 transformed_label = np.ndarray((0, 1))
 true_label = np.ndarray((0, 1))
-
 max_iter = 200
 image_amount = 10000
-count_dict = np.zeros(5, dtype=np.int32)
 epochs = image_amount // max_iter
 previous_count = 0
 
-bar = Bar('Creating', max=(image_amount // count_dict.shape[0]), suffix='%(percent).1f%% - %(eta)ds')
+
+if os.path.exists('./dataset/') is False:
+    os.mkdir('./dataset/')
 
 for i in [3, 5, 10, 100]:
     path = f'./dataset/maze{i}/'
@@ -29,6 +29,8 @@ for i in [3, 5, 10, 100]:
 
     with open(f'{path}maze.txt', 'w') as f:
         count_all = 0
+        count_dict = np.zeros(5, dtype=np.int32)
+        bar = Bar('Creating', max=(image_amount // count_dict.shape[0]), suffix='%(percent).1f%% - %(eta)ds')
         while count_dict.min() < (image_amount // count_dict.shape[0]):
             env = gym.make(f"maze-random-{i}x{i}-v0")
             env.reset()
