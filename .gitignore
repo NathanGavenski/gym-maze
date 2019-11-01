@@ -1,7 +1,10 @@
 # Dataset
 dataset/*
+policy_dataset/*
+maze_samples/*
 images/*
 *.txt
+
 
 # vscode
 vscode/*

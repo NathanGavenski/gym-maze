@@ -30,7 +30,7 @@ for i in [3, 5, 10, 100]:
     with open(f'{path}maze.txt', 'w') as f:
         count_all = 0
         count_dict = np.zeros(5, dtype=np.int32)
-        bar = Bar('Creating', max=(image_amount // count_dict.shape[0]), suffix='%(percent).1f%% - %(eta)ds')
+        bar = Bar(f'Creating {i}', max=(image_amount // count_dict.shape[0]), suffix='%(percent).1f%% - %(eta)ds')
         while count_dict.min() < (image_amount // count_dict.shape[0]):
             env = gym.make(f"maze-random-{i}x{i}-v0")
             env.reset()
