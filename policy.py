@@ -6,6 +6,7 @@ import time
 
 import gym
 import gym_maze
+import os
 
 from PIL import Image
 
@@ -139,14 +140,23 @@ def state_to_bucket(state):
     return tuple(bucket_indice)
 
 
+def write_status(z, i, reward, initial_count, count):
+    with open('expert.txt', 'a') as f:
+        f.write(f'{z};{i};{reward};{initial_count};{count}\n')
+
+
 if __name__ == "__main__":
 
     count = 0
+    if os.path.exists('./policy_dataset/maze10/') is False:
+        os.mkdir('./policy_dataset/')
+        os.mkdir('./policy_dataset/maze10/')
+
     with open('./policy_dataset/maze10/maze.txt', 'w') as f:
         for z in range(10):
             # Initialize the "maze" environment
             env = gym.make("maze-sample-10x10-v1", version=z + 1)
-            for _ in range(1):
+            for i in range(1):
                 '''
                 Defining the environment related constants
                 '''
@@ -192,6 +202,9 @@ if __name__ == "__main__":
                 obv = env.reset()
                 done = False
                 explore_rate = get_explore_rate(127)
+
+                total_reward = 0
+                initial_count = count
                 while not done:
                     state = env.render('rgb_array')
                     state_0 = state_to_bucket(obv)
@@ -203,6 +216,10 @@ if __name__ == "__main__":
                     Image.fromarray(state).convert('RGB').save(f'./policy_dataset/maze10/prev_{count}.png')
                     Image.fromarray(nState).convert('RGB').save(f'./policy_dataset/maze10/next_{count}.png')
                     f.write(f'prev_{count}.png;next_{count}.png;{action}\n')
-                    count += 1
+                    total_reward += reward
+                    if done is False:
+                        count += 1
+
+                write_status(z + 1, i, total_reward, initial_count, count)
             env.close()
             del env
