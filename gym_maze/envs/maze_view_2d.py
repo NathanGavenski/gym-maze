@@ -1,8 +1,11 @@
-import pygame
 import random
 import numpy as np
 import os
 from copy import deepcopy
+
+import contextlib
+with contextlib.redirect_stdout(None):
+    import pygame
 
 
 class MazeView2D:

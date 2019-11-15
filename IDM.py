@@ -21,7 +21,7 @@ previous_count = 0
 if os.path.exists('./dataset/') is False:
     os.mkdir('./dataset/')
 
-for i in [3, 5, 10, 100]:
+for i in [3, 5, 10]:
     path = f'./dataset/maze{i}/'
     if os.path.exists(path) is False:
         os.mkdir(path)
@@ -32,10 +32,14 @@ for i in [3, 5, 10, 100]:
         count_dict = np.zeros(5, dtype=np.int32)
         bar = Bar(f'Creating {i}', max=(image_amount // count_dict.shape[0]), suffix='%(percent).1f%% - %(eta)ds')
         while count_dict.min() < (image_amount // count_dict.shape[0]):
-            env = gym.make(f"maze-random-{i}x{i}-v0")
-            env.reset()
-            previous = deepcopy(env.set_random(True))
+            version = 1
+            env = gym.make(f"maze-sample-{i}x{i}-v1", version=version)
+
+            previous = env.reset()
             if np.random.random() < 0.75:
+                previous = deepcopy(env.set_random(True))
+
+            if np.random.random() < 0:
                 env.turn_augmentation_on()
 
             count = 0
@@ -52,13 +56,13 @@ for i in [3, 5, 10, 100]:
                 next_state = env.render('rgb_array')
 
                 # Save all data
-                Image.fromarray(state).convert('RGB').save(f'{path}images/{str(count_all)}.png')
-                Image.fromarray(next_state).convert('RGB').save(f'{path}images/{str(count_all + 1)}.png')
+                Image.fromarray(state).convert('RGB').save(f'{path}images/previous_{str(count_all)}.png')
+                Image.fromarray(next_state).convert('RGB').save(f'{path}images/next_{str(count_all)}.png')
 
                 temp_transformed_action = -1 if (previous == position).all() else action
                 count_dict[temp_transformed_action] += 1
 
-                f.write(f'{str(count_all)}.png;{str(count_all + 1)}.png;{str(temp_transformed_action)};{str(action)}\n')
+                f.write(f'{str(count_all)}.png;{str(count_all + 1)}.png;{previous};{position};{str(temp_transformed_action)};{str(action)}\n')
 
                 # Save previous state for compartion
                 previous = deepcopy(position)
@@ -69,7 +73,7 @@ for i in [3, 5, 10, 100]:
 
                 # Max iterations per maze
                 count += 1
-                count_all += 2
+                count_all += 1
 
                 if count_dict.min() > previous_count:
                     bar.next()
@@ -77,3 +81,4 @@ for i in [3, 5, 10, 100]:
 
             env.close()
             del env
+            version = 0 if version == 100 else version + 1

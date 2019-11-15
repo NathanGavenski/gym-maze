@@ -153,10 +153,10 @@ if __name__ == "__main__":
         os.mkdir('./policy_dataset/maze10/')
 
     with open('./policy_dataset/maze10/maze.txt', 'w') as f:
-        for z in range(10):
+        for z in range(100):
             # Initialize the "maze" environment
             env = gym.make("maze-sample-10x10-v1", version=z + 1)
-            for i in range(1):
+            for i in range(10):
                 '''
                 Defining the environment related constants
                 '''
@@ -217,9 +217,9 @@ if __name__ == "__main__":
                     Image.fromarray(nState).convert('RGB').save(f'./policy_dataset/maze10/next_{count}.png')
                     f.write(f'prev_{count}.png;next_{count}.png;{action}\n')
                     total_reward += reward
-                    if done is False:
-                        count += 1
+                    count += 1
 
-                write_status(z + 1, i, total_reward, initial_count, count)
+                write_status(z + 1, i, total_reward, initial_count, count-1)
+                print(f'{str(z + 1)}/10 \t{str(i + 1)}/10')
             env.close()
             del env
